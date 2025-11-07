@@ -6,7 +6,7 @@ import { API_BASE_URL } from "../constants/api";
  * @param obj - Object with snake_case keys
  * @returns Object with camelCase keys
  */
-const toCamelCase = (obj: unknown): unknown => {
+export const toCamelCase = (obj: unknown): unknown => {
   if (obj === null || typeof obj !== "object" || obj instanceof Date) {
     return obj;
   }
@@ -32,7 +32,7 @@ const toCamelCase = (obj: unknown): unknown => {
  * @param obj - Object with camelCase keys
  * @returns Object with snake_case keys
  */
-const toSnakeCase = (obj: unknown): unknown => {
+export const toSnakeCase = (obj: unknown): unknown => {
   if (obj === null || typeof obj !== "object" || obj instanceof Date) {
     return obj;
   }

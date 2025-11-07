@@ -1,8 +1,8 @@
 import React from "react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useHeroesList, useHeroesQuery } from "../useHeroesQuery";
+import { useHeroesList } from "../useHeroesQuery";
 
 describe("useHeroesList", () => {
   const createWrapper = () => {
@@ -90,19 +90,7 @@ describe("useHeroesList", () => {
 
   describe("useHeroesQuery pagination", () => {
     it("should return undefined when there is no next page", () => {
-      const queryClient = new QueryClient({
-        defaultOptions: { queries: { retry: false } }
-      });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      );
-
-      const { result } = renderHook(() => useHeroesQuery(), { wrapper });
-
-      // Access the query configuration to test getNextPageParam
-      const queryConfig = result.current;
-      
       // Mock a last page response with no next page
       const lastPageWithoutNext = {
         count: 82,
@@ -115,7 +103,7 @@ describe("useHeroesList", () => {
       const mockQuery = {
         queryKey: ["people"],
         initialPageParam: 1,
-        getNextPageParam: (lastPage: any) => {
+        getNextPageParam: (lastPage: {next: string | null}) => {
           if (!lastPage.next) {
             return undefined; // This covers line 17
           }
