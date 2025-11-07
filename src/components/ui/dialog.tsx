@@ -130,7 +130,6 @@ function DialogContent({
 }: DialogContentProps) {
   const { open, onOpenChange } = useDialog()
 
-  // Handle escape key
   React.useEffect(() => {
     if (!open) return
 
@@ -144,7 +143,6 @@ function DialogContent({
     return () => document.removeEventListener("keydown", handleEscape)
   }, [open, onOpenChange])
 
-  // Prevent body scroll when dialog is open
   React.useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden"

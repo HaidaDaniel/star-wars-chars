@@ -17,9 +17,7 @@ describe("cn utility", () => {
 
   it("should merge Tailwind classes correctly", () => {
     const result = cn("px-2 py-1", "px-4");
-    // Tailwind merge should resolve conflicting classes
     expect(result).toContain("py-1");
-    // px-4 should override px-2
     expect(result).toContain("px-4");
     expect(result).not.toContain("px-2");
   });

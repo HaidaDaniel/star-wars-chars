@@ -5,7 +5,6 @@ import { HeroDetails } from "../HeroDetails";
 import { server, mockHero } from "../../test/mocks/server";
 import type { Hero } from "../../types/Hero.types";
 
-// Mock React Flow components to avoid complex rendering issues in tests
 vi.mock("@xyflow/react", () => ({
   ReactFlow: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="react-flow-mock">{children}</div>
@@ -56,7 +55,6 @@ describe("HeroDetails Component", () => {
       expect(screen.getByTestId("react-flow-mock")).toBeInTheDocument();
     });
 
-    // Check for graph statistics
     expect(screen.getByText("Graph Statistics")).toBeInTheDocument();
     expect(screen.getByText("Hero")).toBeInTheDocument();
     expect(screen.getByText(/Films:/)).toBeInTheDocument();
@@ -70,7 +68,6 @@ describe("HeroDetails Component", () => {
       expect(screen.getByText("Graph Statistics")).toBeInTheDocument();
     });
 
-    // Should show counts based on mock data (text is in separate elements)
     expect(screen.getByText("Films:")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("Starships:")).toBeInTheDocument();
@@ -100,35 +97,29 @@ describe("HeroDetails Component", () => {
       expect(screen.getByText("Graph Statistics")).toBeInTheDocument();
     });
 
-    // Check for zero counts (text is in separate elements)
     expect(screen.getByText("Films:")).toBeInTheDocument();
-    expect(screen.getAllByText("0")).toHaveLength(2); // Should have 2 zeros (films and starships)
+    expect(screen.getAllByText("0")).toHaveLength(2);
     expect(screen.getByText("Starships:")).toBeInTheDocument();
   });
 
   it("should show error state when query fails", async () => {
-    // Suppress console.error for this test since we expect errors
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    // Create a hero with films and starships that will return 404
     const errorHero: Hero = {
       ...mockHero,
-      films: [999], // Non-existent film ID
-      starships: [999], // Non-existent starship ID
+      films: [999],
+      starships: [999],
     };
 
     renderWithQueryClient(<HeroDetails heroDetails={errorHero} />);
 
-    // Wait for the error state to appear (longer timeout to account for retries)
     await waitFor(() => {
       expect(screen.getByText(/Failed to load.*details/)).toBeInTheDocument();
     }, { timeout: 10000 });
     
-    // Should not show the graph components when there's an error
     expect(screen.queryByTestId("react-flow-mock")).not.toBeInTheDocument();
     expect(screen.queryByText("Graph Statistics")).not.toBeInTheDocument();
 
-    // Restore console.error
     consoleErrorSpy.mockRestore();
   });
 });

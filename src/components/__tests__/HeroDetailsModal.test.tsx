@@ -5,7 +5,6 @@ import { HeroDetailsModal } from "../HeroDetailsModal";
 import { server } from "../../test/mocks/server";
 import type { Hero } from "~/types/Hero.types";
 
-// Mock HeroDetails to avoid React Flow complexity in modal tests
 vi.mock("../HeroDetails", () => ({
   HeroDetails: ({ heroDetails }: { heroDetails: Hero }) => (
     <div data-testid="hero-details-mock">Hero Details for {heroDetails.name}</div>
@@ -86,7 +85,6 @@ describe("HeroDetailsModal Component", () => {
       />
     );
 
-    // Wait for loading to finish and hero details to render
     await screen.findByTestId("hero-details-mock");
     
     expect(screen.getByTestId("hero-details-mock")).toBeInTheDocument();
@@ -101,14 +99,11 @@ describe("HeroDetailsModal Component", () => {
       />
     );
 
-    // Check that dialog is rendered with proper role
     const dialog = screen.getByRole("dialog");
     expect(dialog).toBeInTheDocument();
     
-    // The dialog component should be properly set up
     expect(screen.getByText("Hero Details")).toBeInTheDocument();
     
-    // Check that close button is present
     const closeButton = screen.getByRole("button", { name: /close/i });
     expect(closeButton).toBeInTheDocument();
   });
@@ -134,15 +129,12 @@ describe("HeroDetailsModal Component", () => {
       />
     );
 
-    // Find the dialog element
     const dialog = screen.getByRole("dialog");
     expect(dialog).toBeInTheDocument();
 
-    // Find the close button and click it to trigger onOpenChange with false
     const closeButton = screen.getByRole("button", { name: /close/i });
     fireEvent.click(closeButton);
 
-    // Verify onClose was called
     expect(mockOnClose).toHaveBeenCalled();
   });
 });

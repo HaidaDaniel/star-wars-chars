@@ -45,7 +45,6 @@ const mockFilm: Film = {
 
 describe("HeroCard", () => {
   beforeEach(() => {
-    // Setup store with film data
     useStarWarsStore.getState().setData({
       films: {
         1: mockFilm,

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader } from "./ui/card";
  */
 export const HeroCardSkeleton: React.FC = () => {
   return (
-    <Card className="flex flex-col w-full h-[550px] bg-card text-card-foreground border-border">
+    <Card className="flex flex-col w-full min-h-140 bg-card text-card-foreground border-border">
       <div className="flex flex-col flex-1 p-4 sm:p-6 overflow-hidden">
         <CardHeader>
           <div className="h-8 w-48 bg-muted animate-pulse rounded mb-2" />

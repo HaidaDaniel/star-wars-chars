@@ -67,7 +67,6 @@ describe("useHeroesList", () => {
         expect(result.current.isFetching).toBe(false);
       });
 
-      // Should have more heroes after loading (MSW returns same hero for all pages)
       expect(result.current.heroes.length).toBe(initialHeroesCount + 1);
     }
   });
@@ -91,7 +90,6 @@ describe("useHeroesList", () => {
   describe("useHeroesQuery pagination", () => {
     it("should return undefined when there is no next page", () => {
 
-      // Mock a last page response with no next page
       const lastPageWithoutNext = {
         count: 82,
         next: null,
@@ -99,24 +97,21 @@ describe("useHeroesList", () => {
         results: [{ id: 1, name: "Luke Skywalker" }]
       };
 
-      // Create a mock query to test the getNextPageParam function
       const mockQuery = {
         queryKey: ["people"],
         initialPageParam: 1,
         getNextPageParam: (lastPage: {next: string | null}) => {
           if (!lastPage.next) {
-            return undefined; // This covers line 17
+            return undefined;
           }
           const pageMatch = lastPage.next.match(/page=(\d+)/);
           return pageMatch ? parseInt(pageMatch[1], 10) : undefined;
         }
       };
 
-      // Test the getNextPageParam function directly
       const nextPageParam = mockQuery.getNextPageParam(lastPageWithoutNext);
       expect(nextPageParam).toBeUndefined();
 
-      // Also test with a valid next URL to ensure the regex parsing works
       const lastPageWithNext = {
         ...lastPageWithoutNext,
         next: "https://swapi.dev/api/people/?page=3"
@@ -125,7 +120,6 @@ describe("useHeroesList", () => {
       const nextPageParamWithNext = mockQuery.getNextPageParam(lastPageWithNext);
       expect(nextPageParamWithNext).toBe(3);
 
-      // Test with invalid next URL format
       const lastPageWithInvalidNext = {
         ...lastPageWithoutNext,
         next: "https://swapi.dev/api/people/invalid"

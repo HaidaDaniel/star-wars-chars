@@ -8,13 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { LazyImage } from "./LazyImage";
 
-/**
- * Component for displaying hero card with basic information
- * @param props - Hero data object
- */
 export const HeroCard: React.FC<Hero> = (props) => {
   const {
+    id,
     name,
     birthYear,
     eyeColor,
@@ -42,12 +40,17 @@ export const HeroCard: React.FC<Hero> = (props) => {
     : "N/A";
 
   return (
-    <Card className="flex flex-col w-full h-[420px] transition-transform hover:scale-[1.02] cursor-pointer bg-card text-card-foreground border-border hover:border-primary/50 p-4">
-      <div className="flex flex-col flex-1 p-4 sm:p-6 overflow-hidden">
-        <CardHeader className="shrink-0">
+    <Card className="flex flex-col p-4 w-full min-h-140 transition-transform hover:scale-[1.02] cursor-pointer bg-card text-card-foreground border-border hover:border-primary/50 overflow-hidden">
+      <LazyImage
+        characterId={id}
+        alt={name}
+        className="w-full h-48 shrink-0"
+      />
+      <div className="flex flex-col flex-1 overflow-hidden ">
+        <CardHeader className="shrink-0 p-0">
           <CardTitle className="text-2xl mb-2 text-foreground">{name}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-1 text-sm text-muted-foreground overflow-y-auto flex-1 py-4">
+        <CardContent className="space-y-1 text-sm text-muted-foreground overflow-y-auto flex-1 py-4 p-0">
           <div>
             <strong className="text-foreground">Birth Year:</strong> {birthYear}
           </div>

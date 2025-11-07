@@ -5,7 +5,6 @@ import type { Film } from "../../types/Film.type";
 
 describe("starWarsStore", () => {
   beforeEach(() => {
-    // Reset store to initial state before each test
     const store = useStarWarsStore.getState();
     store.setData({ films: {} });
     store.closeModal();

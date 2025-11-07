@@ -58,7 +58,6 @@ it('should return empty array when fetchWithLimit receives empty list', async ()
 });
 
 it('should process items in batches and skip failed requests', async () => {
-  // Suppress console.error for this test since we expect errors
   const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
   const ids = [1, 2, 3, 4, 5];
@@ -77,7 +76,6 @@ it('should process items in batches and skip failed requests', async () => {
 
   expect(order).toEqual(ids);
 
-  // Restore console.error
   consoleErrorSpy.mockRestore();
 });
 

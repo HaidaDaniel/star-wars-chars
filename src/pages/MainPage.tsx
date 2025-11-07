@@ -4,6 +4,7 @@ import { HeroCardSkeleton } from "../components/HeroCardSkeleton";
 import { HeroDetailsModal } from "../components/HeroDetailsModal";
 import { useHeroesList } from "../queries/useHeroesQuery";
 import { useHeroModal } from "../hooks/useHeroModal";
+import { Button } from "~/components/ui/button";
 
 /**
  * Main page component for displaying a scrollable list of Star Wars heroes.
@@ -33,12 +34,12 @@ export const MainPage = () => {
           <p className="text-muted-foreground">
             {error?.message || "Failed to load Star Wars characters. Please check your connection and try again."}
           </p>
-          <button 
+          <Button 
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             Try Again
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -46,13 +47,14 @@ export const MainPage = () => {
 
   return (
     <div className="bg-background min-h-screen">
+      <h1 className="text-3xl font-bold text-foreground mb-6 text-center p-4">Star Wars Characters</h1>
       <div className="max-w-[1400px] mx-auto p-6">
         <InfiniteScroll
           dataLength={heroes.length}
           next={loadMoreHeroes}
           hasMore={hasNextPage}
           loader={null}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4"
         >
           {heroes.map((hero) => (
             <div key={hero.url} onClick={() => handleOpenModal(hero.id)} className="w-full">

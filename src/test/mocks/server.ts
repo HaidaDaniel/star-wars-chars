@@ -5,7 +5,6 @@ import type { Film } from "~/types/Film.type";
 import type { Hero, HeroPageResponse } from "~/types/Hero.types";
 import type { Starship } from "~/types/Starship.type";
 
-// Mock data
 export const mockHero: Hero = {
   id: 1,
   name: "Luke Skywalker",
@@ -73,9 +72,7 @@ export const mockStarship: Starship = {
   edited: "2014-12-20T21:23:49.886000Z",
 };
 
-// Additional handlers for specific test cases
 const additionalHandlers = [
-  // Handle people endpoints with various patterns
   http.get('*/people/:id/', ({ params }) => {
     const id = Number(params.id);
     
@@ -93,7 +90,6 @@ const additionalHandlers = [
     });
   }),
   
-  // Handle people list with various patterns
   http.get('*/people/', ({ request }) => {
     const url = new URL(request.url);
     const page = url.searchParams.get("page") || "1";
@@ -110,9 +106,7 @@ const additionalHandlers = [
   }),
 ];
 
-// Request handlers
 export const handlers = [
-  // Get heroes page
   http.get(`${API_BASE_URL}/people/`, ({ request }) => {
     const url = new URL(request.url);
     const page = url.searchParams.get("page");
@@ -128,7 +122,6 @@ export const handlers = [
     });
   }),
 
-  // Get hero by ID
   http.get(`${API_BASE_URL}/people/:id/`, ({ params }) => {
     const id = Number(params.id);
     
@@ -146,7 +139,6 @@ export const handlers = [
     });
   }),
 
-  // Get film by ID
   http.get(`${API_BASE_URL}/films/:id/`, ({ params }) => {
     const id = Number(params.id);
     
@@ -163,9 +155,7 @@ export const handlers = [
     });
   }),
 
-  // Get all films
   http.get(`${API_BASE_URL}/films/`, () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...filmWithoutId } = mockFilm;
     return HttpResponse.json({
       count: 1,
@@ -175,7 +165,6 @@ export const handlers = [
     });
   }),
 
-  // Get starship by ID
   http.get(`${API_BASE_URL}/starships/:id/`, ({ params }) => {
     const id = Number(params.id);
     
@@ -186,7 +175,6 @@ export const handlers = [
       );
     }
     
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...starshipWithoutId } = mockStarship;
     return HttpResponse.json({
       ...starshipWithoutId,
@@ -195,6 +183,5 @@ export const handlers = [
   }),
 ];
 
-// Setup server
 export const server = setupServer(...handlers, ...additionalHandlers);
 

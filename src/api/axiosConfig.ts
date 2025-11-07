@@ -1,11 +1,6 @@
 import axios from "axios";
 import { API_BASE_URL } from "../constants/api";
 
-/**
- * Helper function to convert snake_case keys to camelCase
- * @param obj - Object with snake_case keys
- * @returns Object with camelCase keys
- */
 export const toCamelCase = (obj: unknown): unknown => {
   if (obj === null || typeof obj !== "object" || obj instanceof Date) {
     return obj;
@@ -27,11 +22,6 @@ export const toCamelCase = (obj: unknown): unknown => {
   return camelCaseObj;
 };
 
-/**
- * Helper function to convert camelCase keys to snake_case for API requests
- * @param obj - Object with camelCase keys
- * @returns Object with snake_case keys
- */
 export const toSnakeCase = (obj: unknown): unknown => {
   if (obj === null || typeof obj !== "object" || obj instanceof Date) {
     return obj;
@@ -53,11 +43,6 @@ export const toSnakeCase = (obj: unknown): unknown => {
   return snakeCaseObj;
 };
 
-/**
- * Configured axios instance with baseURL and interceptors
- * Automatically converts API responses from snake_case to camelCase
- * and request data from camelCase to snake_case
- */
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
@@ -66,7 +51,6 @@ export const apiClient = axios.create({
   },
 });
 
-// Response interceptor to convert snake_case to camelCase
 apiClient.interceptors.response.use(
   (response) => {
     if (response.data && typeof response.data === 'object') {
@@ -79,7 +63,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Request interceptor to convert camelCase to snake_case
 apiClient.interceptors.request.use(
   (config) => {
     if (config.data && typeof config.data === 'object') {

@@ -3,7 +3,6 @@ import { apiClient } from '../axiosConfig';
 import { API_BASE_URL } from '../../constants/api';
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
-// Type for internal interceptor handlers structure
 interface InterceptorHandler<T> {
   fulfilled: ((value: T) => T | Promise<T>) | null;
   rejected: ((error: unknown) => unknown) | null;
@@ -32,9 +31,7 @@ describe('axiosConfig', () => {
       expect((apiClient.interceptors.response as unknown as ResponseInterceptorManager).handlers.length).toBeGreaterThan(0);
     });
 
-    // Test the core transformation functions directly by importing them
     it('should convert response data from snake_case to camelCase', async () => {
-      // Create a mock response with snake_case data
       const mockResponse: AxiosResponse = {
         data: {
           first_name: 'Luke',
@@ -51,7 +48,6 @@ describe('axiosConfig', () => {
         config: {} as InternalAxiosRequestConfig
       };
 
-      // Test that the response interceptor converts snake_case to camelCase
       const responseInterceptor = (apiClient.interceptors.response as unknown as ResponseInterceptorManager).handlers[0];
       const interceptedResponse = responseInterceptor.fulfilled?.(mockResponse) as AxiosResponse;
       
@@ -90,7 +86,6 @@ describe('axiosConfig', () => {
     });
 
     it('should handle arrays in transformations', () => {
-      // Test array handling in toCamelCase (response interceptor)
       const responseWithArray: AxiosResponse = {
         data: [
           { first_name: 'Luke', last_name: 'Skywalker' },
@@ -109,7 +104,6 @@ describe('axiosConfig', () => {
         { birthYear: '19BBY', eyeColor: 'blue' }
       ]);
 
-      // Test array handling in toSnakeCase (request interceptor)
       const requestWithArray: InternalAxiosRequestConfig = {
         data: [
           { firstName: 'Luke', lastName: 'Skywalker' },

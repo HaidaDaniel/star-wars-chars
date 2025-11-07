@@ -18,18 +18,9 @@ interface HeroDetailsProps {
   heroDetails: Hero;
 }
 
-/**
- * Component for displaying hero details as a graph visualization using React Flow.
- * Shows a graph structure where:
- * - The hero is the central node
- * - Films where the hero appears are connected from the hero
- * - Starships that the hero traveled on are connected from the films where they appear
- * @param heroDetails - Hero data object containing name, films, and starships information
- */
 export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
   const { name, films, starships } = heroDetails;
 
-  // Fetch detailed information about films and starships
   const {
     data: filmsAndStarshipsData,
     isLoading,
@@ -39,17 +30,14 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
     queryKey: ["filmsAndStarships", films || [], starships || []],
     queryFn: () => fetchFilmsAndStarships(films || [], starships || []),
     retry: (failureCount, error) => {
-      // Don't retry if we got partial data (this function throws only on complete failure)
       if (error?.message?.includes('Failed to fetch any hero details data')) {
         return failureCount < 2;
       }
-      // Retry up to 3 times for other errors
       return failureCount < 3;
     },
     retryDelay: (attemptIndex) => Math.min(1500 * 2 ** attemptIndex, 15000),
   });
 
-  // Generate graph nodes and edges when data is loaded
   const { nodes, edges } = useMemo(() => {
     if (!filmsAndStarshipsData) {
       return { nodes: [], edges: [] };
@@ -100,7 +88,6 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
 
   return (
     <div className="flex flex-col h-full w-full bg-background relative">
-      {/* Warning notification for partial failures */}
       {warnings && (warnings.failedFilms || warnings.failedStarships) && (
         <div className="absolute top-4 right-4 z-10 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-2 shadow-lg max-w-xs">
           <div className="text-xs text-yellow-800">
@@ -115,7 +102,6 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
         </div>
       )}
 
-      {/* Graph statistics header */}
       <div className="absolute top-4 left-4 z-10 bg-card/90 backdrop-blur-sm border border-border rounded-lg px-4 py-2 shadow-lg">
         <div className="text-sm text-muted-foreground space-y-2">
           <div className="font-semibold text-foreground">Graph Statistics</div>
@@ -152,7 +138,6 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
         </div>
       </div>
 
-      {/* React Flow graph */}
       <ReactFlow
         nodes={nodes}
         edges={edges}

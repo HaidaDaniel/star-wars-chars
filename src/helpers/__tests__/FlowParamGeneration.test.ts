@@ -91,20 +91,17 @@ describe("FlowParamGeneration", () => {
       const heroName = "Luke Skywalker";
       const nodes = generateNodes(heroName, mockFilms, mockStarships);
 
-      expect(nodes).toHaveLength(5); // 1 hero + 2 films + 2 starships
+      expect(nodes).toHaveLength(5);
 
-      // Check hero node
       const heroNode = nodes.find(node => node.id === "hero");
       expect(heroNode).toBeDefined();
       expect((heroNode?.data as { label: { props: { children: string } } }).label.props.children).toBe(heroName);
 
-      // Check film nodes
       const filmNodes = nodes.filter(node => node.id.startsWith("film-"));
       expect(filmNodes).toHaveLength(2);
     expect((filmNodes[0].data as { label: { props: { children: string } } }).label.props.children).toBe("A New Hope");
     expect((filmNodes[1].data as { label: { props: { children: string } } }).label.props.children).toBe("The Empire Strikes Back");
 
-      // Check starship nodes
       const starshipNodes = nodes.filter(node => node.id.startsWith("ship-"));
       expect(starshipNodes).toHaveLength(2);
     expect((starshipNodes[0].data as { label: { props: { children: string } } }).label.props.children).toBe("X-wing");
@@ -120,7 +117,7 @@ describe("FlowParamGeneration", () => {
       const heroName = "Luke Skywalker";
       const nodes = generateNodes(heroName, [], []);
 
-      expect(nodes).toHaveLength(1); // Only hero node
+      expect(nodes).toHaveLength(1);
       expect(nodes[0].id).toBe("hero");
       expect((nodes[0].data as { label: { props: { children: string } } }).label.props.children).toBe(heroName);
     });
@@ -133,8 +130,8 @@ describe("FlowParamGeneration", () => {
       expect(heroNode?.position.x).toBe(0);
 
       const filmNodes = nodes.filter(node => node.id.startsWith("film-"));
-      expect(filmNodes[0].position.y).toBe(filmNodes[1].position.y); // Same Y level
-      expect(filmNodes[0].position.x).not.toBe(filmNodes[1].position.x); // Different X positions
+      expect(filmNodes[0].position.y).toBe(filmNodes[1].position.y);
+      expect(filmNodes[0].position.x).not.toBe(filmNodes[1].position.x);
     });
   });
 
@@ -142,7 +139,6 @@ describe("FlowParamGeneration", () => {
     it("should generate edges from hero to films", () => {
       const edges = generateEdges(mockFilms, mockStarships);
 
-      // Hero to film edges
       const heroToFilmEdges = edges.filter(edge => edge.source === "hero");
       expect(heroToFilmEdges).toHaveLength(2);
       expect(heroToFilmEdges[0].target).toBe("film-0");
@@ -152,16 +148,13 @@ describe("FlowParamGeneration", () => {
     it("should generate edges from films to starships based on film associations", () => {
       const edges = generateEdges(mockFilms, mockStarships);
 
-      // Film to starship edges
       const filmToStarshipEdges = edges.filter(edge => 
         edge.source.startsWith("film-") && edge.target.startsWith("ship-")
       );
 
-      // X-wing appears in films 1 and 2
       const xWingEdges = filmToStarshipEdges.filter(edge => edge.target === "ship-0");
       expect(xWingEdges.length).toBeGreaterThan(0);
 
-      // Millennium Falcon appears in film 1
       const falconEdges = filmToStarshipEdges.filter(edge => edge.target === "ship-1");
       expect(falconEdges.length).toBeGreaterThan(0);
     });
@@ -174,11 +167,9 @@ describe("FlowParamGeneration", () => {
     it("should handle films without starships", () => {
       const edges = generateEdges(mockFilms, []);
       
-      // Should still have hero to film edges
       const heroToFilmEdges = edges.filter(edge => edge.source === "hero");
       expect(heroToFilmEdges).toHaveLength(2);
 
-      // Should not have film to starship edges
       const filmToStarshipEdges = edges.filter(edge => 
         edge.source.startsWith("film-") && edge.target.startsWith("ship-")
       );

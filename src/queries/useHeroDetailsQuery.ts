@@ -2,11 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchHeroDetails } from "../api/api";
 import type { Hero } from "../types/Hero.types";
 
-/**
- * Query hook for fetching hero details by ID
- * @param heroId - Unique identifier of the hero (null if no hero selected)
- * @returns TanStack Query result for hero details
- */
 export const useHeroDetailsQuery = (heroId: number | null) => {
   return useQuery<Hero, Error>({
     queryKey: ["heroDetails", heroId],
@@ -18,22 +13,15 @@ export const useHeroDetailsQuery = (heroId: number | null) => {
     },
     enabled: !!heroId,
     retry: (failureCount, error) => {
-      // Don't retry on 404 (not found) errors
       if (error?.message?.includes('404')) {
         return false;
       }
-      // Retry up to 2 times for other errors
       return failureCount < 2;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
   });
 };
 
-/**
- * Hook that combines the query with additional processing for hero details
- * @param heroId - Unique identifier of the hero (null if no hero selected)
- * @returns Object containing hero details, loading state, and error state
- */
 export const useHeroDetails = (heroId: number | null) => {
   const {
     data: heroDetails,

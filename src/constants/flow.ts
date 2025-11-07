@@ -4,29 +4,15 @@ import {
   STARSHIP_COLORS,
 } from "./colors";
 
-/**
- * Configuration constants for React Flow graph nodes.
- * Defines dimensions and vertical positioning for hero, film, and starship nodes.
- */
 export const FLOW_NODE_CONFIG = {
-  /** Width of each node in pixels */
   width: 200,
-  /** Height of each node in pixels */
   height: 40,
-  /** Horizontal padding between nodes in pixels */
   padding: 0,
-  /** Y position for the hero node (central node) */
   heroYPosition: 5,
-  /** Y position for film nodes (middle row) */
   filmsYPosition: 100,
-  /** Y position for starship nodes (bottom row) */
   starshipsYPosition: 200,
 } as const;
 
-/**
- * Base style configuration for React Flow graph nodes.
- * Applied to all nodes in the hero details graph visualization.
- */
 export const FLOW_NODE_BASE_STYLE = {
   width: FLOW_NODE_CONFIG.width,
   height: `${FLOW_NODE_CONFIG.height}px`,
@@ -39,10 +25,6 @@ export const FLOW_NODE_BASE_STYLE = {
   fontSize: "14px",
 } as const;
 
-/**
- * Style configuration for hero node (central node).
- * Blue theme with white text for dark mode visibility.
- */
 export const HERO_NODE_STYLE = {
   ...FLOW_NODE_BASE_STYLE,
   backgroundColor: HERO_COLORS.background,
@@ -50,10 +32,6 @@ export const HERO_NODE_STYLE = {
   color: HERO_COLORS.text,
 } as const;
 
-/**
- * Style configuration for film nodes.
- * Green theme with white text for dark mode visibility.
- */
 export const FILM_NODE_STYLE = {
   ...FLOW_NODE_BASE_STYLE,
   backgroundColor: FILM_COLORS.background,
@@ -61,10 +39,6 @@ export const FILM_NODE_STYLE = {
   color: FILM_COLORS.text,
 } as const;
 
-/**
- * Style configuration for starship nodes.
- * Purple theme with white text for dark mode visibility.
- */
 export const STARSHIP_NODE_STYLE = {
   ...FLOW_NODE_BASE_STYLE,
   backgroundColor: STARSHIP_COLORS.background,

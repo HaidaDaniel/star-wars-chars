@@ -41,6 +41,7 @@ export default defineConfig({
         "**/vite-env.d.ts",
         // Entry points
         "src/main.tsx",
+        "src/App.tsx",
         // Type definitions
         "src/types/**",
         // Constants (no logic to test)

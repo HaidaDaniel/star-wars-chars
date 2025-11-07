@@ -71,12 +71,11 @@ describe("useHeroDetails", () => {
 
   describe("useHeroDetailsQuery", () => {
     it("should throw error when heroId is null and query is enabled", async () => {
-      // Create a query client that doesn't retry to avoid multiple error logs
       const queryClient = new QueryClient({
         defaultOptions: {
           queries: {
             retry: false,
-            enabled: true, // Force enable to test the error throwing
+            enabled: true,
           },
         },
       });
@@ -85,22 +84,18 @@ describe("useHeroDetails", () => {
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
       );
 
-      // Manually trigger the query with null heroId to test the error case
       const { result } = renderHook(() => {
         return useHeroDetailsQuery(null);
       }, { wrapper });
 
-      // The query should be disabled when heroId is null, so no error should occur
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBe(null);
 
-      // Test the direct query function to cover the error throwing line
       const queryClient2 = new QueryClient({
         defaultOptions: { queries: { retry: false } }
       });
 
       try {
-        // This should trigger the error throwing code path
         await queryClient2.fetchQuery({
           queryKey: ["heroDetails", null],
           queryFn: () => {
