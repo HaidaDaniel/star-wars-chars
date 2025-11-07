@@ -5,7 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import { fetchStarWarsData } from "./api/api";
 import { useStarWarsStore } from "./store/starWarsStore";
 import { MainPage } from "./pages/MainPage";
-import "./app.css";
+import "./App.css";
 
 /**
  * React Query client instance for managing server state and caching.
