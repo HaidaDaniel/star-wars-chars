@@ -9,6 +9,26 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate React and related libraries
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          // Separate React Flow (large visualization library)
+          "react-flow": ["@xyflow/react"],
+          // Separate React Query
+          "react-query": ["@tanstack/react-query"],
+          // Separate InfiniteScroll
+          "infinite-scroll": ["react-infinite-scroll-component"],
+          // Other utilities
+          "utils": ["axios", "zustand", "date-fns", "clsx", "tailwind-merge"],
+        },
+      },
+    },
+    // Increase chunk size warning limit (optional)
+    chunkSizeWarningLimit: 600,
+  },
   test: {
     globals: true,
     environment: "jsdom",

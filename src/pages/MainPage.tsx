@@ -1,10 +1,15 @@
+import { lazy, Suspense } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import HeroCard from "../components/HeroCard";
 import { HeroCardSkeleton } from "../components/HeroCardSkeleton";
-import { HeroDetailsModal } from "../components/HeroDetailsModal";
 import { useHeroesList } from "../queries/useHeroesQuery";
 import { useHeroModal } from "../hooks/useHeroModal";
 import { Button } from "~/components/ui/button";
+
+// Lazy load HeroDetailsModal to reduce initial bundle size
+const HeroDetailsModal = lazy(() => import("../components/HeroDetailsModal").then(module => ({
+  default: module.HeroDetailsModal
+})));
 
 /**
  * Main page component for displaying a scrollable list of Star Wars heroes.
@@ -81,11 +86,15 @@ export const MainPage = () => {
           )}
         </InfiniteScroll>
       </div>
-      <HeroDetailsModal
-        isOpen={isModalOpen}
-        heroId={selectedHeroId}
-        onClose={handleCloseModal}
-      />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <HeroDetailsModal
+            isOpen={isModalOpen}
+            heroId={selectedHeroId}
+            onClose={handleCloseModal}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };
