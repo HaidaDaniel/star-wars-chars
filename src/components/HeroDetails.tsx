@@ -29,13 +29,6 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
   } = useQuery<IFetchFilmsAndStarships>({
     queryKey: ["filmsAndStarships", films || [], starships || []],
     queryFn: () => fetchFilmsAndStarships(films || [], starships || []),
-    retry: (failureCount, error) => {
-      if (error?.message?.includes('Failed to fetch any hero details data')) {
-        return failureCount < 2;
-      }
-      return failureCount < 3;
-    },
-    retryDelay: (attemptIndex) => Math.min(1500 * 2 ** attemptIndex, 15000),
   });
 
   const { nodes, edges } = useMemo(() => {

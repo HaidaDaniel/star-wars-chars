@@ -115,7 +115,7 @@ describe("HeroDetails Component", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Failed to load.*details/)).toBeInTheDocument();
-    }, { timeout: 10000 });
+    });
     
     expect(screen.queryByTestId("react-flow-mock")).not.toBeInTheDocument();
     expect(screen.queryByText("Graph Statistics")).not.toBeInTheDocument();

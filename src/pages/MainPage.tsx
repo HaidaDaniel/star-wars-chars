@@ -70,6 +70,15 @@ export const MainPage = () => {
               ))}
             </>
           )}
+          {!hasNextPage && heroes.length > 0 && (
+            <div className="col-span-full mt-6 mb-4 text-center">
+              <div className="inline-block px-6 py-3 bg-primary/10 border-2 border-primary/30 rounded-lg">
+                <p className="text-foreground font-semibold">
+                  All Characters Loaded
+                </p>
+              </div>
+            </div>
+          )}
         </InfiniteScroll>
       </div>
       <HeroDetailsModal

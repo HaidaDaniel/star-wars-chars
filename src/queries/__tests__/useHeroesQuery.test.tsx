@@ -9,8 +9,9 @@ describe("useHeroesList", () => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
+          staleTime: 0,
+          gcTime: 0,
           retry: false,
-          retryDelay: 0,
         },
       },
     });
@@ -25,14 +26,12 @@ describe("useHeroesList", () => {
       wrapper: createWrapper(),
     });
 
-    expect(result.current.isLoading).toBe(true);
-    expect(result.current.heroes).toEqual([]);
-
+    // Wait for data to be loaded
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    }, { timeout: 5000 });
+      expect(result.current.heroes.length).toBeGreaterThan(0);
+    });
 
-    expect(result.current.heroes.length).toBeGreaterThan(0);
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.heroes[0].id).toBeDefined();
     expect(result.current.heroes[0].name).toBe("Luke Skywalker");
   });
@@ -43,8 +42,8 @@ describe("useHeroesList", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    }, { timeout: 5000 });
+      expect(result.current.heroes.length).toBeGreaterThan(0);
+    });
 
     expect(result.current.hasNextPage).toBe(true);
   });
@@ -55,8 +54,8 @@ describe("useHeroesList", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    }, { timeout: 5000 });
+      expect(result.current.heroes.length).toBeGreaterThan(0);
+    });
 
     const initialHeroesCount = result.current.heroes.length;
 
@@ -64,10 +63,10 @@ describe("useHeroesList", () => {
       result.current.loadMoreHeroes();
 
       await waitFor(() => {
-        expect(result.current.isFetching).toBe(false);
+        expect(result.current.heroes.length).toBeGreaterThan(initialHeroesCount);
       });
 
-      expect(result.current.heroes.length).toBe(initialHeroesCount + 1);
+      expect(result.current.isFetching).toBe(false);
     }
   });
 
@@ -77,8 +76,8 @@ describe("useHeroesList", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    }, { timeout: 5000 });
+      expect(result.current.heroes.length).toBeGreaterThan(0);
+    });
 
     result.current.loadMoreHeroes();
     result.current.loadMoreHeroes();

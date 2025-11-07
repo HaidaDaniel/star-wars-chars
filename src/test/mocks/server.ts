@@ -72,44 +72,10 @@ export const mockStarship: Starship = {
   edited: "2014-12-20T21:23:49.886000Z",
 };
 
-const additionalHandlers = [
-  http.get('*/people/:id/', ({ params }) => {
-    const id = Number(params.id);
-    
-    if (id === 999) {
-      return HttpResponse.json(
-        { detail: "Not found" },
-        { status: 404 }
-      );
-    }
-    
-    return HttpResponse.json({
-      ...mockHero,
-      id: id,
-      url: `${API_BASE_URL}/people/${id}/`,
-    });
-  }),
-  
-  http.get('*/people/', ({ request }) => {
-    const url = new URL(request.url);
-    const page = url.searchParams.get("page") || "1";
-
-    if (page === "1") {
-      return HttpResponse.json(mockHeroPageResponse);
-    }
- 
-    return HttpResponse.json({
-      ...mockHeroPageResponse,
-      next: page === "2" ? `${API_BASE_URL}/people/?page=3` : null,
-      previous: page !== "1" ? `${API_BASE_URL}/people/?page=${Number(page) - 1}` : null,
-    });
-  }),
-];
-
 export const handlers = [
   http.get(`${API_BASE_URL}/people/`, ({ request }) => {
     const url = new URL(request.url);
-    const page = url.searchParams.get("page");
+    const page = url.searchParams.get("page") || "1";
 
     if (page === "1") {
       return HttpResponse.json(mockHeroPageResponse);
@@ -156,6 +122,7 @@ export const handlers = [
   }),
 
   http.get(`${API_BASE_URL}/films/`, () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...filmWithoutId } = mockFilm;
     return HttpResponse.json({
       count: 1,
@@ -175,6 +142,7 @@ export const handlers = [
       );
     }
     
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...starshipWithoutId } = mockStarship;
     return HttpResponse.json({
       ...starshipWithoutId,
@@ -183,5 +151,5 @@ export const handlers = [
   }),
 ];
 
-export const server = setupServer(...handlers, ...additionalHandlers);
+export const server = setupServer(...handlers);
 

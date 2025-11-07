@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import { LazyImage } from "../LazyImage";
 
 vi.mock("../../constants/api", () => ({
@@ -94,20 +94,22 @@ describe("LazyImage", () => {
 
     expect(img).toHaveAttribute("src", FALLBACK_CHARACTER_IMAGE);
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", `${CHARACTER_IMAGE_URL}/1.jpg`);
@@ -142,26 +144,30 @@ describe("LazyImage", () => {
 
     const img = screen.getByAltText("Luke Skywalker");
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", `${CHARACTER_IMAGE_URL}/1.jpg`);
     });
 
-    fireEvent.load(img);
+    act(() => {
+      fireEvent.load(img);
+    });
 
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
@@ -175,26 +181,30 @@ describe("LazyImage", () => {
 
     const img = screen.getByAltText("Luke Skywalker");
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", `${CHARACTER_IMAGE_URL}/1.jpg`);
     });
 
-    fireEvent.error(img);
+    act(() => {
+      fireEvent.error(img);
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", FALLBACK_CHARACTER_IMAGE);
@@ -215,20 +225,22 @@ describe("LazyImage", () => {
 
     let img = screen.getByAltText("Character 1");
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", `${CHARACTER_IMAGE_URL}/1.jpg`);
@@ -265,20 +277,22 @@ describe("LazyImage", () => {
 
     const img = screen.getByAltText("Luke Skywalker");
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", `${CHARACTER_IMAGE_URL}/1.jpg`);
@@ -286,20 +300,22 @@ describe("LazyImage", () => {
 
     const currentSrc = img.getAttribute("src");
     
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     expect(img).toHaveAttribute("src", currentSrc);
   });
@@ -309,45 +325,51 @@ describe("LazyImage", () => {
 
     const img = screen.getByAltText("Luke Skywalker");
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", `${CHARACTER_IMAGE_URL}/1.jpg`);
     });
 
-    fireEvent.error(img);
+    act(() => {
+      fireEvent.error(img);
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", FALLBACK_CHARACTER_IMAGE);
     });
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     expect(img).toHaveAttribute("src", FALLBACK_CHARACTER_IMAGE);
   });
@@ -366,26 +388,30 @@ describe("LazyImage", () => {
 
     expect(img).toHaveClass("opacity-0");
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     await waitFor(() => {
       expect(img).toHaveAttribute("src", `${CHARACTER_IMAGE_URL}/1.jpg`);
     });
 
-    fireEvent.load(img);
+    act(() => {
+      fireEvent.load(img);
+    });
 
     await waitFor(() => {
       expect(img).toHaveClass("opacity-100");
@@ -399,26 +425,30 @@ describe("LazyImage", () => {
 
     expect(img).toHaveAttribute("src", FALLBACK_CHARACTER_IMAGE);
 
-    fireEvent.error(img);
+    act(() => {
+      fireEvent.error(img);
+    });
 
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     });
 
-    observeCallback(
-      [
-        {
-          isIntersecting: true,
-          target: img,
-          intersectionRatio: 1,
-          boundingClientRect: {} as DOMRectReadOnly,
-          intersectionRect: {} as DOMRectReadOnly,
-          rootBounds: null,
-          time: Date.now(),
-        },
-      ],
-      mockObserverInstance as unknown as IntersectionObserver
-    );
+    act(() => {
+      observeCallback(
+        [
+          {
+            isIntersecting: true,
+            target: img,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: Date.now(),
+          },
+        ],
+        mockObserverInstance as unknown as IntersectionObserver
+      );
+    });
 
     expect(img).toHaveAttribute("src", FALLBACK_CHARACTER_IMAGE);
   });

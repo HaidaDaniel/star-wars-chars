@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
 import { MainPage } from "../MainPage";
@@ -80,13 +80,16 @@ const renderWithQueryClient = (component: React.ReactElement) => {
 
 describe("MainPage Component", () => {
   beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
+  afterEach(() => {
+    cleanup();
+    server.resetHandlers();
+    vi.unstubAllGlobals();
+  });
   afterAll(() => server.close());
 
   it("should show loading skeleton initially", () => {
     renderWithQueryClient(<MainPage />);
     
-    // Should show skeleton loaders while loading (look for animate-pulse class)
     const skeletonElements = document.querySelectorAll('.animate-pulse');
     expect(skeletonElements.length).toBeGreaterThan(0);
   });
@@ -94,7 +97,6 @@ describe("MainPage Component", () => {
   it("should render hero cards when data loads", async () => {
     renderWithQueryClient(<MainPage />);
 
-    // Wait for hero cards to appear
     await waitFor(() => {
       expect(screen.getByTestId("hero-card-1")).toBeInTheDocument();
     });
@@ -113,15 +115,12 @@ describe("MainPage Component", () => {
   it("should open modal when hero card is clicked", async () => {
     renderWithQueryClient(<MainPage />);
 
-    // Wait for hero card to appear
     await waitFor(() => {
       expect(screen.getByTestId("hero-card-1")).toBeInTheDocument();
     });
 
-    // Click on hero card
     fireEvent.click(screen.getByTestId("hero-card-1"));
 
-    // Modal should open
     await waitFor(() => {
       expect(screen.getByTestId("hero-modal")).toBeInTheDocument();
     });
@@ -132,22 +131,18 @@ describe("MainPage Component", () => {
   it("should close modal when close button is clicked", async () => {
     renderWithQueryClient(<MainPage />);
 
-    // Wait for hero card and click it
     await waitFor(() => {
       expect(screen.getByTestId("hero-card-1")).toBeInTheDocument();
     });
     
     fireEvent.click(screen.getByTestId("hero-card-1"));
 
-    // Wait for modal to open
     await waitFor(() => {
       expect(screen.getByTestId("hero-modal")).toBeInTheDocument();
     });
 
-    // Click close button
     fireEvent.click(screen.getByTestId("close-modal"));
 
-    // Modal should close
     await waitFor(() => {
       expect(screen.queryByTestId("hero-modal")).not.toBeInTheDocument();
     });
@@ -156,17 +151,184 @@ describe("MainPage Component", () => {
   it("should handle load more functionality", async () => {
     renderWithQueryClient(<MainPage />);
 
-    // Wait for initial load
     await waitFor(() => {
       expect(screen.getByTestId("infinite-scroll")).toBeInTheDocument();
     });
 
-    // Check if load more button exists (when hasMore is true)
     const loadMoreBtn = screen.queryByTestId("load-more");
     if (loadMoreBtn) {
       fireEvent.click(loadMoreBtn);
-      // Should trigger loading more heroes
       expect(loadMoreBtn).toBeInTheDocument();
     }
+  });
+
+  it("should display error state when fetching heroes fails", async () => {
+    const { http, HttpResponse } = await import("msw");
+    server.use(
+      http.get("https://sw-api.starnavi.io/people/", () => {
+        return HttpResponse.json(
+          { detail: "Internal server error" },
+          { status: 500 }
+        );
+      })
+    );
+    
+    renderWithQueryClient(<MainPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Error loading heroes")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText(/Error loading heroes/)
+    ).toBeInTheDocument();
+  });
+
+  it("should display custom error message when available", async () => {
+    const { http, HttpResponse } = await import("msw");
+    const customErrorMessage = "Network connection failed";
+    
+    server.use(
+      http.get("https://sw-api.starnavi.io/people/", () => {
+        return HttpResponse.json(
+          { detail: customErrorMessage },
+          { status: 500 }
+        );
+      })
+    );
+    
+    renderWithQueryClient(<MainPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Error loading heroes")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/Error loading heroes/)).toBeInTheDocument();
+  });
+
+  it("should reload page when Try Again button is clicked in error state", async () => {
+    const reloadMock = vi.fn();
+    vi.stubGlobal('location', { ...window.location, reload: reloadMock });
+
+    const { http, HttpResponse } = await import("msw");
+    server.use(
+      http.get("https://sw-api.starnavi.io/people/", () => {
+        return HttpResponse.json(
+          { detail: "Server error" },
+          { status: 500 }
+        );
+      })
+    );
+    
+    renderWithQueryClient(<MainPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Error loading heroes")).toBeInTheDocument();
+    });
+
+    const tryAgainButton = screen.getByRole("button", { name: /try again/i });
+    fireEvent.click(tryAgainButton);
+
+    expect(reloadMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("should render skeleton loaders during fetching with proper key", async () => {
+    const { http, HttpResponse, delay } = await import("msw");
+    let requestCount = 0;
+    
+    server.use(
+      http.get("https://sw-api.starnavi.io/people/", async ({ request }) => {
+        requestCount++;
+        const url = new URL(request.url);
+        const page = url.searchParams.get("page");
+        
+        if (page === "2") {
+          await delay(50);
+        }
+        
+        return HttpResponse.json({
+          count: 20,
+          next: page === "2" ? null : "https://sw-api.starnavi.io/people/?page=2",
+          previous: null,
+          results: [
+            {
+              id: requestCount,
+              name: `Hero ${requestCount}`,
+              height: "172",
+              mass: "77",
+              hair_color: "blond",
+              skin_color: "fair",
+              eye_color: "blue",
+              birth_year: "19BBY",
+              gender: "male",
+              homeworld: 1,
+              films: [1],
+              species: [],
+              vehicles: [],
+              starships: [],
+              created: "2014-12-09T13:50:51.644000Z",
+              edited: "2014-12-20T21:17:56.891000Z",
+              url: `https://sw-api.starnavi.io/people/${requestCount}/`,
+            },
+          ],
+        });
+      })
+    );
+
+    renderWithQueryClient(<MainPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("hero-card-1")).toBeInTheDocument();
+    });
+
+    const loadMoreBtn = screen.queryByTestId("load-more");
+    if (loadMoreBtn) {
+      fireEvent.click(loadMoreBtn);
+      expect(loadMoreBtn).toBeInTheDocument();
+    }
+  });
+
+  it("should show 'All Characters Loaded' message when all heroes are loaded", async () => {
+    const { http, HttpResponse } = await import("msw");
+    server.use(
+      http.get("https://sw-api.starnavi.io/people/", () => {
+        return HttpResponse.json({
+          count: 1,
+          next: null,
+          previous: null,
+          results: [
+            {
+              id: 1,
+              name: "Luke Skywalker",
+              height: "172",
+              mass: "77",
+              hair_color: "blond",
+              skin_color: "fair",
+              eye_color: "blue",
+              birth_year: "19BBY",
+              gender: "male",
+              homeworld: 1,
+              films: [1, 2, 3],
+              species: [],
+              vehicles: [14, 30],
+              starships: [12, 22],
+              created: "2014-12-09T13:50:51.644000Z",
+              edited: "2014-12-20T21:17:56.891000Z",
+              url: "https://sw-api.starnavi.io/people/1/",
+            },
+          ],
+        });
+      })
+    );
+
+    renderWithQueryClient(<MainPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("hero-card-1")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("All Characters Loaded")).toBeInTheDocument();
+    });
   });
 });
