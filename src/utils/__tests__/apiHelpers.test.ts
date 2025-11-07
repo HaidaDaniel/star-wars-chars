@@ -92,16 +92,16 @@ describe("apiHelpers", () => {
       const resource = {
         url: "https://sw-api.starnavi.io/people/7/",
         name: "Test Hero",
-        birth_year: "19BBY",
-        eye_color: "blue",
+        birthYear: "19BBY",
+        eyeColor: "blue",
       };
 
       const result = addIdToResource(resource);
 
       expect(result.id).toBe(7);
       expect(result.name).toBe("Test Hero");
-      expect(result.birth_year).toBe("19BBY");
-      expect(result.eye_color).toBe("blue");
+      expect(result.birthYear).toBe("19BBY");
+      expect(result.eyeColor).toBe("blue");
     });
   });
 });

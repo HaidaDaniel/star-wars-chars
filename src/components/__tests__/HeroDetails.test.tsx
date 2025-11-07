@@ -45,7 +45,8 @@ describe("HeroDetails Component", () => {
 
   it("should show loading state initially", () => {
     renderWithQueryClient(<HeroDetails heroDetails={mockHeroDetails} />);
-    expect(screen.getByText("Loading hero details...")).toBeInTheDocument();
+    expect(screen.getByText(/Loading.*details/)).toBeInTheDocument();
+    expect(screen.getByText("Fetching films and starships data")).toBeInTheDocument();
   });
 
   it("should render hero details with graph when data loads", async () => {
@@ -103,5 +104,31 @@ describe("HeroDetails Component", () => {
     expect(screen.getByText("Films:")).toBeInTheDocument();
     expect(screen.getAllByText("0")).toHaveLength(2); // Should have 2 zeros (films and starships)
     expect(screen.getByText("Starships:")).toBeInTheDocument();
+  });
+
+  it("should show error state when query fails", async () => {
+    // Suppress console.error for this test since we expect errors
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Create a hero with films and starships that will return 404
+    const errorHero: Hero = {
+      ...mockHero,
+      films: [999], // Non-existent film ID
+      starships: [999], // Non-existent starship ID
+    };
+
+    renderWithQueryClient(<HeroDetails heroDetails={errorHero} />);
+
+    // Wait for the error state to appear (longer timeout to account for retries)
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load.*details/)).toBeInTheDocument();
+    }, { timeout: 10000 });
+    
+    // Should not show the graph components when there's an error
+    expect(screen.queryByTestId("react-flow-mock")).not.toBeInTheDocument();
+    expect(screen.queryByText("Graph Statistics")).not.toBeInTheDocument();
+
+    // Restore console.error
+    consoleErrorSpy.mockRestore();
   });
 });

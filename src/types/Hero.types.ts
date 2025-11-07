@@ -1,13 +1,13 @@
 export type Hero = {
   id: number;
   name: string;
-  birth_year: string;
-  eye_color: string;
+  birthYear: string;
+  eyeColor: string;
   gender: string;
-  hair_color: string;
+  hairColor: string;
   height: string;
   mass: string;
-  skin_color: string;
+  skinColor: string;
   homeworld: number;
   films: number[];
   species: number[];

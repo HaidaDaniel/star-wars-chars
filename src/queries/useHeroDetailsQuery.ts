@@ -17,6 +17,15 @@ export const useHeroDetailsQuery = (heroId: number | null) => {
       return fetchHeroDetails(heroId);
     },
     enabled: !!heroId,
+    retry: (failureCount, error) => {
+      // Don't retry on 404 (not found) errors
+      if (error?.message?.includes('404')) {
+        return false;
+      }
+      // Retry up to 2 times for other errors
+      return failureCount < 2;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
   });
 };
 

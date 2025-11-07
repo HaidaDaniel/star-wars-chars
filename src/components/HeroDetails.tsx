@@ -34,9 +34,19 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
     data: filmsAndStarshipsData,
     isLoading,
     isError,
+    error,
   } = useQuery<IFetchFilmsAndStarships>({
     queryKey: ["filmsAndStarships", films || [], starships || []],
     queryFn: () => fetchFilmsAndStarships(films || [], starships || []),
+    retry: (failureCount, error) => {
+      // Don't retry if we got partial data (this function throws only on complete failure)
+      if (error?.message?.includes('Failed to fetch any hero details data')) {
+        return failureCount < 2;
+      }
+      // Retry up to 3 times for other errors
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1500 * 2 ** attemptIndex, 15000),
   });
 
   // Generate graph nodes and edges when data is loaded
@@ -60,7 +70,10 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <h4 className="text-lg text-foreground">Loading hero details...</h4>
+        <div className="text-center space-y-2">
+          <h4 className="text-lg text-foreground">Loading {name} details...</h4>
+          <p className="text-sm text-muted-foreground">Fetching films and starships data</p>
+        </div>
       </div>
     );
   }
@@ -68,16 +81,40 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
   if (isError) {
     return (
       <div className="flex items-center justify-center h-full">
-        <h4 className="text-lg text-destructive">Error fetching hero details</h4>
+        <div className="text-center space-y-4 max-w-md mx-auto p-4">
+          <h4 className="text-lg text-destructive">Failed to load {name} details</h4>
+          <p className="text-sm text-muted-foreground">
+            {error?.message || "Unable to fetch films and starships information. This may be due to network issues or API rate limiting."}
+          </p>
+          <div className="text-xs text-muted-foreground">
+            Requested: {(films?.length || 0)} films, {(starships?.length || 0)} starships
+          </div>
+        </div>
       </div>
     );
   }
 
   const filmsCount = filmsAndStarshipsData?.films.length || 0;
   const starshipsCount = filmsAndStarshipsData?.starships.length || 0;
+  const warnings = filmsAndStarshipsData?.warnings;
 
   return (
     <div className="flex flex-col h-full w-full bg-background relative">
+      {/* Warning notification for partial failures */}
+      {warnings && (warnings.failedFilms || warnings.failedStarships) && (
+        <div className="absolute top-4 right-4 z-10 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-2 shadow-lg max-w-xs">
+          <div className="text-xs text-yellow-800">
+            <div className="font-semibold mb-1">⚠️ Partial data loaded</div>
+            {warnings.failedFilms && (
+              <div>Failed to load {warnings.failedFilms} film{warnings.failedFilms > 1 ? 's' : ''}</div>
+            )}
+            {warnings.failedStarships && (
+              <div>Failed to load {warnings.failedStarships} starship{warnings.failedStarships > 1 ? 's' : ''}</div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Graph statistics header */}
       <div className="absolute top-4 left-4 z-10 bg-card/90 backdrop-blur-sm border border-border rounded-lg px-4 py-2 shadow-lg">
         <div className="text-sm text-muted-foreground space-y-2">

@@ -30,8 +30,8 @@ it('should fetch hero details and add ID to resource', async () => {
   
   expect(res.name).toBe('Luke Skywalker');
   expect(res.id).toBeDefined();
-  expect(res.birth_year).toBe('19BBY');
-  expect(res.eye_color).toBe('blue');
+  expect(res.birthYear).toBe('19BBY');
+  expect(res.eyeColor).toBe('blue');
 });
 
 it('should fetch film details and add ID to resource', async () => {
@@ -39,7 +39,7 @@ it('should fetch film details and add ID to resource', async () => {
   
   expect(res.title).toBe('A New Hope');
   expect(res.id).toBeDefined();
-  expect(res.episode_id).toBe(4);
+  expect(res.episodeId).toBe(4);
   expect(res.director).toBe('George Lucas');
 });
 
@@ -49,7 +49,7 @@ it('should fetch starship details and add ID to resource', async () => {
   expect(res.name).toBe('X-wing');
   expect(res.id).toBeDefined();
   expect(res.model).toBe('T-65 X-wing');
-  expect(res.starship_class).toBe('Starfighter');
+  expect(res.starshipClass).toBe('Starfighter');
 });
 
 it('should return empty array when fetchWithLimit receives empty list', async () => {
@@ -58,6 +58,9 @@ it('should return empty array when fetchWithLimit receives empty list', async ()
 });
 
 it('should process items in batches and skip failed requests', async () => {
+  // Suppress console.error for this test since we expect errors
+  const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
   const ids = [1, 2, 3, 4, 5];
   const order: number[] = [];
 
@@ -73,6 +76,9 @@ it('should process items in batches and skip failed requests', async () => {
   expect(res).toEqual([{ id: 1 }, { id: 2 }, { id: 4 }, { id: 5 }]);
 
   expect(order).toEqual(ids);
+
+  // Restore console.error
+  consoleErrorSpy.mockRestore();
 });
 
 it('should fetch films and starships in parallel using fetchWithLimit', async () => {

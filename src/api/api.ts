@@ -1,21 +1,22 @@
-import axios from "axios";
 import type { AxiosResponse } from "axios";
 import type { Film } from "../types/Film.type";
 import type { Starship } from "../types/Starship.type";
 import type { StarWarsData } from "../types/Data";
 import type { Hero, HeroPageResponse } from "../types/Hero.types";
-import { API_BASE_URL, API_BATCH_SIZE } from "../constants/api";
+import { API_BATCH_SIZE } from "../constants/api";
 import { addIdToResource } from "../utils/apiHelpers";
+import { apiClient } from "./axiosConfig";
 
 type FetchFunction<T> = (id: number) => Promise<T>;
 
 /**
  * Performs a base HTTP GET request to the Star Wars API.
- * @param slug - API endpoint path (e.g., "people/1/" or "films/")
+ * @param endpoint - API endpoint path (e.g., "people/1/" or "films/")
+ * @param params - Optional query parameters
  * @returns Promise resolving to the response data of type T
  */
-const baseRequest = async <T>(slug: string): Promise<T> => {
-  const response: AxiosResponse<T> = await axios.get(`${API_BASE_URL}/${slug}`);
+const baseRequest = async <T>(endpoint: string, params?: Record<string, unknown>): Promise<T> => {
+  const response: AxiosResponse<T> = await apiClient.get(endpoint, { params });
   return response.data;
 };
 
@@ -26,7 +27,7 @@ const baseRequest = async <T>(slug: string): Promise<T> => {
  * @returns Promise resolving to a page of heroes with extracted IDs
  */
 export const fetchHeroesPage = async (page: number): Promise<HeroPageResponse> => {
-  const response = await baseRequest<HeroPageResponse>(`people/?page=${page}`);
+  const response = await baseRequest<HeroPageResponse>('people/', { page });
   
   return {
     ...response,
@@ -114,25 +115,55 @@ export const fetchWithLimit = async <T>(
 export interface IFetchFilmsAndStarships {
   films: Film[];
   starships: Starship[];
+  warnings?: {
+    failedFilms?: number;
+    failedStarships?: number;
+  };
 }
 
 /**
- * Fetches films and starships data in parallel for a hero.
- * Used to populate the hero details graph with film and starship information.
+ * Fetches films and starships data using optimized batch processing.
+ * Uses sequential processing instead of Promise.all to avoid overwhelming the API
+ * and prevent 429 rate limiting errors.
  * @param filmIds - Array of film IDs where the hero appears
  * @param starshipIds - Array of starship IDs that the hero traveled on
- * @returns Promise resolving to an object containing arrays of films and starships
+ * @returns Promise resolving to an object containing arrays of films and starships with warnings for partial failures
+ * @throws Error when all requests fail and no data can be fetched
  */
 export const fetchFilmsAndStarships = async (
   filmIds: number[],
   starshipIds: number[]
 ): Promise<IFetchFilmsAndStarships> => {
-  const [films, starships] = await Promise.all([
-    fetchWithLimit(filmIds, fetchFilmDetails),
-    fetchWithLimit(starshipIds, fetchStarshipDetails),
-  ]);
+  // Process films first, then starships to avoid rate limiting
+  const films = await fetchWithLimit(filmIds, fetchFilmDetails);
+  // Add small delay between batches to prevent 429 errors
+  await new Promise(resolve => setTimeout(resolve, 100));
+  const starships = await fetchWithLimit(starshipIds, fetchStarshipDetails);
 
-  return { films, starships };
+  // Calculate failures for warnings
+  const failedFilms = filmIds.length - films.length;
+  const failedStarships = starshipIds.length - starships.length;
+
+  // If we had IDs to fetch but got no results, it means all requests failed
+  const hadFilmsToFetch = filmIds.length > 0;
+  const hadStarshipsToFetch = starshipIds.length > 0;
+  const gotNoFilms = films.length === 0;
+  const gotNoStarships = starships.length === 0;
+  
+  if ((hadFilmsToFetch || hadStarshipsToFetch) && gotNoFilms && gotNoStarships) {
+    throw new Error('Failed to fetch any hero details data');
+  }
+
+  // Prepare result with warnings for partial failures
+  const result: IFetchFilmsAndStarships = { films, starships };
+  
+  if (failedFilms > 0 || failedStarships > 0) {
+    result.warnings = {};
+    if (failedFilms > 0) result.warnings.failedFilms = failedFilms;
+    if (failedStarships > 0) result.warnings.failedStarships = failedStarships;
+  }
+
+  return result;
 };
 
 /**
@@ -141,7 +172,7 @@ export const fetchFilmsAndStarships = async (
  * @returns Promise resolving to StarWarsData with films indexed by ID
  */
 export const fetchStarWarsData = async (): Promise<StarWarsData> => {
-  const films = await baseRequest<{ results: Film[] }>(`films/`);
+  const films = await baseRequest<{ results: Film[] }>('films/');
 
   return {
     films: films.results.map(addIdToResource).reduce<Record<number, Film>>((acc, film) => {

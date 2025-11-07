@@ -40,9 +40,20 @@ export const HeroDetailsModal: React.FC<HeroDetailsModalProps> = ({
         </DialogHeader>
         <div className="flex-1 flex items-center justify-center overflow-hidden">
           {isLoading ? (
-            <h4 className="text-lg text-foreground">Loading hero details...</h4>
+            <div className="text-center space-y-2">
+              <h4 className="text-lg text-foreground">Loading hero details...</h4>
+              <p className="text-sm text-muted-foreground">Fetching character information</p>
+            </div>
           ) : isError ? (
-            <h4 className="text-lg text-destructive">Error fetching hero details</h4>
+            <div className="text-center space-y-4 max-w-md mx-auto p-4">
+              <h4 className="text-lg text-destructive">Failed to load hero</h4>
+              <p className="text-sm text-muted-foreground">
+                Unable to fetch character information. Please try selecting another hero or check your connection.
+              </p>
+              {heroId && (
+                <p className="text-xs text-muted-foreground">Hero ID: {heroId}</p>
+              )}
+            </div>
           ) : heroDetails ? (
             <HeroDetails heroDetails={heroDetails} />
           ) : null}

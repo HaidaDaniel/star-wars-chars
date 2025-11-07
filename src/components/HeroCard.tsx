@@ -16,13 +16,13 @@ import {
 export const HeroCard: React.FC<Hero> = (props) => {
   const {
     name,
-    birth_year,
-    eye_color,
+    birthYear,
+    eyeColor,
     gender,
-    hair_color,
+    hairColor,
     height,
     mass,
-    skin_color,
+    skinColor,
     homeworld,
     films,
     species,
@@ -42,23 +42,23 @@ export const HeroCard: React.FC<Hero> = (props) => {
     : "N/A";
 
   return (
-    <Card className="flex flex-col w-full h-[550px] transition-transform hover:scale-[1.02] cursor-pointer bg-card text-card-foreground border-border hover:border-primary/50 p-4">
+    <Card className="flex flex-col w-full h-[420px] transition-transform hover:scale-[1.02] cursor-pointer bg-card text-card-foreground border-border hover:border-primary/50 p-4">
       <div className="flex flex-col flex-1 p-4 sm:p-6 overflow-hidden">
         <CardHeader className="shrink-0">
           <CardTitle className="text-2xl mb-2 text-foreground">{name}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-1 text-sm text-muted-foreground overflow-y-auto flex-1 py-4">
           <div>
-            <strong className="text-foreground">Birth Year:</strong> {birth_year}
+            <strong className="text-foreground">Birth Year:</strong> {birthYear}
           </div>
           <div>
-            <strong className="text-foreground">Eye Color:</strong> {eye_color}
+            <strong className="text-foreground">Eye Color:</strong> {eyeColor}
           </div>
           <div>
             <strong className="text-foreground">Gender:</strong> {gender}
           </div>
           <div>
-            <strong className="text-foreground">Hair Color:</strong> {hair_color}
+            <strong className="text-foreground">Hair Color:</strong> {hairColor}
           </div>
           <div>
             <strong className="text-foreground">Height:</strong> {height}
@@ -67,7 +67,7 @@ export const HeroCard: React.FC<Hero> = (props) => {
             <strong className="text-foreground">Mass:</strong> {mass}
           </div>
           <div>
-            <strong className="text-foreground">Skin Color:</strong> {skin_color}
+            <strong className="text-foreground">Skin Color:</strong> {skinColor}
           </div>
           <div>
             <strong className="text-foreground">Homeworld:</strong> {homeworld}

@@ -9,13 +9,13 @@ import type { Starship } from "~/types/Starship.type";
 export const mockHero: Hero = {
   id: 1,
   name: "Luke Skywalker",
-  birth_year: "19BBY",
-  eye_color: "blue",
+  birthYear: "19BBY",
+  eyeColor: "blue",
   gender: "male",
-  hair_color: "blond",
+  hairColor: "blond",
   height: "172",
   mass: "77",
-  skin_color: "fair",
+  skinColor: "fair",
   homeworld: 1,
   films: [1, 2, 3],
   species: [1],
@@ -36,11 +36,11 @@ export const mockHeroPageResponse: HeroPageResponse = {
 export const mockFilm: Film = {
   id: 1,
   title: "A New Hope",
-  episode_id: 4,
-  opening_crawl: "It is a period of civil war...",
+  episodeId: 4,
+  openingCrawl: "It is a period of civil war...",
   director: "George Lucas",
   producer: "Gary Kurtz, Rick McCallum",
-  release_date: "1977-05-25",
+  releaseDate: "1977-05-25",
   species: [1, 2],
   starships: [2, 3],
   vehicles: [4, 5],
@@ -56,22 +56,59 @@ export const mockStarship: Starship = {
   name: "X-wing",
   model: "T-65 X-wing",
   manufacturer: "Incom Corporation",
-  cost_in_credits: "149999",
+  costInCredits: "149999",
   length: "12.5",
-  max_atmosphering_speed: "1050",
+  maxAtmospheringSpeed: "1050",
   crew: "1",
   passengers: "0",
-  cargo_capacity: "110",
+  cargoCapacity: "110",
   consumables: "1 week",
-  hyperdrive_rating: "1.0",
+  hyperdriveRating: "1.0",
   MGLT: "100",
-  starship_class: "Starfighter",
+  starshipClass: "Starfighter",
   pilots: [1],
   films: [1, 2, 3],
   url: `${API_BASE_URL}/starships/12/`,
   created: "2014-12-12T11:19:05.340000Z",
   edited: "2014-12-20T21:23:49.886000Z",
 };
+
+// Additional handlers for specific test cases
+const additionalHandlers = [
+  // Handle people endpoints with various patterns
+  http.get('*/people/:id/', ({ params }) => {
+    const id = Number(params.id);
+    
+    if (id === 999) {
+      return HttpResponse.json(
+        { detail: "Not found" },
+        { status: 404 }
+      );
+    }
+    
+    return HttpResponse.json({
+      ...mockHero,
+      id: id,
+      url: `${API_BASE_URL}/people/${id}/`,
+    });
+  }),
+  
+  // Handle people list with various patterns
+  http.get('*/people/', ({ request }) => {
+    const url = new URL(request.url);
+    const page = url.searchParams.get("page") || "1";
+
+    if (page === "1") {
+      return HttpResponse.json(mockHeroPageResponse);
+    }
+ 
+    return HttpResponse.json({
+      ...mockHeroPageResponse,
+      next: page === "2" ? `${API_BASE_URL}/people/?page=3` : null,
+      previous: page !== "1" ? `${API_BASE_URL}/people/?page=${Number(page) - 1}` : null,
+    });
+  }),
+];
 
 // Request handlers
 export const handlers = [
@@ -94,6 +131,14 @@ export const handlers = [
   // Get hero by ID
   http.get(`${API_BASE_URL}/people/:id/`, ({ params }) => {
     const id = Number(params.id);
+    
+    if (id === 999) {
+      return HttpResponse.json(
+        { detail: "Not found" },
+        { status: 404 }
+      );
+    }
+    
     return HttpResponse.json({
       ...mockHero,
       id: id,
@@ -104,6 +149,14 @@ export const handlers = [
   // Get film by ID
   http.get(`${API_BASE_URL}/films/:id/`, ({ params }) => {
     const id = Number(params.id);
+    
+    if (id === 999) {
+      return HttpResponse.json(
+        { detail: "Not found" },
+        { status: 404 }
+      );
+    }
+    
     return HttpResponse.json({
       ...mockFilm,
       url: `${API_BASE_URL}/films/${id}/`,
@@ -125,6 +178,14 @@ export const handlers = [
   // Get starship by ID
   http.get(`${API_BASE_URL}/starships/:id/`, ({ params }) => {
     const id = Number(params.id);
+    
+    if (id === 999) {
+      return HttpResponse.json(
+        { detail: "Not found" },
+        { status: 404 }
+      );
+    }
+    
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...starshipWithoutId } = mockStarship;
     return HttpResponse.json({
@@ -135,5 +196,5 @@ export const handlers = [
 ];
 
 // Setup server
-export const server = setupServer(...handlers);
+export const server = setupServer(...handlers, ...additionalHandlers);
 

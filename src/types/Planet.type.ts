@@ -1,13 +1,13 @@
 export type Planet = {
   id: number;
   name: string;
-  rotation_period: string;
-  orbital_period: string;
+  rotationPeriod: string;
+  orbitalPeriod: string;
   diameter: string;
   climate: string;
   gravity: string;
   terrain: string;
-  surface_water: string;
+  surfaceWater: string;
   population: string;
   residents: number[];
   films: number[];

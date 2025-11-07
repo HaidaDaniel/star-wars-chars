@@ -11,7 +11,7 @@ import { useHeroModal } from "../hooks/useHeroModal";
  * Opens a modal with hero details graph when a hero card is clicked.
  */
 export const MainPage = () => {
-  const { heroes, loadMoreHeroes, hasNextPage, isLoading, isFetching } = useHeroesList();
+  const { heroes, loadMoreHeroes, hasNextPage, isLoading, isFetching, isError, error } = useHeroesList();
   const { selectedHeroId, isModalOpen, handleOpenModal, handleCloseModal } =
     useHeroModal();
 
@@ -21,6 +21,25 @@ export const MainPage = () => {
         {Array.from({ length: 6 }).map((_, index) => (
           <HeroCardSkeleton key={index} />
         ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center space-y-4 max-w-md mx-auto p-6">
+          <h2 className="text-2xl font-bold text-destructive">Error loading heroes</h2>
+          <p className="text-muted-foreground">
+            {error?.message || "Failed to load Star Wars characters. Please check your connection and try again."}
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
 import { HeroDetailsModal } from "../HeroDetailsModal";
@@ -101,12 +101,16 @@ describe("HeroDetailsModal Component", () => {
       />
     );
 
-    // Simulate dialog close behavior
+    // Check that dialog is rendered with proper role
     const dialog = screen.getByRole("dialog");
     expect(dialog).toBeInTheDocument();
     
     // The dialog component should be properly set up
     expect(screen.getByText("Hero Details")).toBeInTheDocument();
+    
+    // Check that close button is present
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    expect(closeButton).toBeInTheDocument();
   });
 
   it("should handle null heroId", () => {
@@ -119,5 +123,26 @@ describe("HeroDetailsModal Component", () => {
     );
 
     expect(screen.getByText("Hero Details")).toBeInTheDocument();
+  });
+
+  it("should call onClose when dialog onOpenChange triggers with false", () => {
+    renderWithQueryClient(
+      <HeroDetailsModal
+        isOpen={true}
+        heroId={1}
+        onClose={mockOnClose}
+      />
+    );
+
+    // Find the dialog element
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+
+    // Find the close button and click it to trigger onOpenChange with false
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    fireEvent.click(closeButton);
+
+    // Verify onClose was called
+    expect(mockOnClose).toHaveBeenCalled();
   });
 });

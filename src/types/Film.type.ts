@@ -1,11 +1,11 @@
 export type Film = {
   id: number;
   title: string;
-  episode_id: number;
-  opening_crawl: string;
+  episodeId: number;
+  openingCrawl: string;
   director: string;
   producer: string;
-  release_date: string;
+  releaseDate: string;
   species: number[];
   starships: number[];
   vehicles: number[];

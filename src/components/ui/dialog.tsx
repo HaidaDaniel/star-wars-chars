@@ -160,6 +160,8 @@ function DialogContent({
     <DialogPortal>
       <DialogOverlay />
       <div
+        role="dialog"
+        aria-modal="true"
         className={cn(
           "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg animate-in fade-in-0 zoom-in-95 duration-200 sm:max-w-lg",
           className

@@ -8,11 +8,11 @@ describe("FlowParamGeneration", () => {
     {
       id: 1,
       title: "A New Hope",
-      episode_id: 4,
-      opening_crawl: "It is a period of civil war...",
+      episodeId: 4,
+      openingCrawl: "It is a period of civil war...",
       director: "George Lucas",
       producer: "Gary Kurtz",
-      release_date: "1977-05-25",
+      releaseDate: "1977-05-25",
       species: [],
       starships: [],
       vehicles: [],
@@ -25,11 +25,11 @@ describe("FlowParamGeneration", () => {
     {
       id: 2,
       title: "The Empire Strikes Back",
-      episode_id: 5,
-      opening_crawl: "It is a dark time...",
+      episodeId: 5,
+      openingCrawl: "It is a dark time...",
       director: "Irvin Kershner",
       producer: "Gary Kurtz",
-      release_date: "1980-05-17",
+      releaseDate: "1980-05-17",
       species: [],
       starships: [],
       vehicles: [],
@@ -43,19 +43,20 @@ describe("FlowParamGeneration", () => {
 
   const mockStarships: Starship[] = [
     {
+      id: 1,
       name: "X-wing",
       model: "T-65 X-wing",
       manufacturer: "Incom Corporation",
-      cost_in_credits: "149999",
+      costInCredits: "149999",
       length: "12.5",
-      max_atmosphering_speed: "1050",
+      maxAtmospheringSpeed: "1050",
       crew: "1",
       passengers: "0",
-      cargo_capacity: "110",
+      cargoCapacity: "110",
       consumables: "1 week",
-      hyperdrive_rating: "1.0",
+      hyperdriveRating: "1.0",
       MGLT: "100",
-      starship_class: "Starfighter",
+      starshipClass: "Starfighter",
       pilots: [],
       films: [1, 2],
       url: "https://swapi.dev/api/starships/12/",
@@ -63,19 +64,20 @@ describe("FlowParamGeneration", () => {
       edited: "2014-12-20T21:23:49.886000Z",
     },
     {
+      id: 2,
       name: "Millennium Falcon",
       model: "YT-1300 light freighter",
       manufacturer: "Corellian Engineering Corporation",
-      cost_in_credits: "100000",
+      costInCredits: "100000",
       length: "34.37",
-      max_atmosphering_speed: "1050",
+      maxAtmospheringSpeed: "1050",
       crew: "4",
       passengers: "6",
-      cargo_capacity: "100000",
+      cargoCapacity: "100000",
       consumables: "2 months",
-      hyperdrive_rating: "0.5",
+      hyperdriveRating: "0.5",
       MGLT: "75",
-      starship_class: "Light freighter",
+      starshipClass: "Light freighter",
       pilots: [],
       films: [1],
       url: "https://swapi.dev/api/starships/10/",
@@ -94,19 +96,19 @@ describe("FlowParamGeneration", () => {
       // Check hero node
       const heroNode = nodes.find(node => node.id === "hero");
       expect(heroNode).toBeDefined();
-      expect(heroNode?.data.label.props.children).toBe(heroName);
+      expect((heroNode?.data as { label: { props: { children: string } } }).label.props.children).toBe(heroName);
 
       // Check film nodes
       const filmNodes = nodes.filter(node => node.id.startsWith("film-"));
       expect(filmNodes).toHaveLength(2);
-      expect(filmNodes[0].data.label.props.children).toBe("A New Hope");
-      expect(filmNodes[1].data.label.props.children).toBe("The Empire Strikes Back");
+    expect((filmNodes[0].data as { label: { props: { children: string } } }).label.props.children).toBe("A New Hope");
+    expect((filmNodes[1].data as { label: { props: { children: string } } }).label.props.children).toBe("The Empire Strikes Back");
 
       // Check starship nodes
       const starshipNodes = nodes.filter(node => node.id.startsWith("ship-"));
       expect(starshipNodes).toHaveLength(2);
-      expect(starshipNodes[0].data.label.props.children).toBe("X-wing");
-      expect(starshipNodes[1].data.label.props.children).toBe("Millennium Falcon");
+    expect((starshipNodes[0].data as { label: { props: { children: string } } }).label.props.children).toBe("X-wing");
+    expect((starshipNodes[1].data as { label: { props: { children: string } } }).label.props.children).toBe("Millennium Falcon");
     });
 
     it("should return empty array when hero name is empty", () => {
@@ -120,7 +122,7 @@ describe("FlowParamGeneration", () => {
 
       expect(nodes).toHaveLength(1); // Only hero node
       expect(nodes[0].id).toBe("hero");
-      expect(nodes[0].data.label.props.children).toBe(heroName);
+      expect((nodes[0].data as { label: { props: { children: string } } }).label.props.children).toBe(heroName);
     });
 
     it("should position nodes correctly", () => {
