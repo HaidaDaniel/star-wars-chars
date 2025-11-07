@@ -1,6 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { server } from '../../test/mocks/server';
-import { http, HttpResponse } from 'msw';
+import { it, expect, vi, beforeEach } from 'vitest';
 import { API_BASE_URL } from '../../constants/api';
 import {
   fetchHeroesPage,

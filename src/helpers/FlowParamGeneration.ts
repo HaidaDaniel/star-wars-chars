@@ -11,8 +11,6 @@ import {
 
 import {
   HERO_COLORS,
-  FILM_COLORS,
-  STARSHIP_COLORS,
 } from "../constants/colors";
 
 /**

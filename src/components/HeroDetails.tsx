@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFilmsAndStarships } from "../api/api";
 import type { IFetchFilmsAndStarships } from "../api/api";
 import type { Hero } from "../types/Hero.types";
 import { generateEdges, generateNodes } from "../helpers/FlowParamGeneration";
 import { ReactFlow, Controls, Background } from "@xyflow/react";
-import type { Edge, Node } from "@xyflow/react";
 import {
   HERO_COLORS,
   FILM_COLORS,
@@ -28,9 +27,6 @@ interface HeroDetailsProps {
  * @param heroDetails - Hero data object containing name, films, and starships information
  */
 export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-
   const { name, films, starships } = heroDetails;
 
   // Fetch detailed information about films and starships
@@ -44,20 +40,21 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
   });
 
   // Generate graph nodes and edges when data is loaded
-  useEffect(() => {
-    if (filmsAndStarshipsData) {
-      const { films: filmDetails, starships: starshipDetails } =
-        filmsAndStarshipsData;
-      const generatedNodes = generateNodes(
-        name,
-        filmDetails,
-        starshipDetails
-      );
-      const generatedEdges = generateEdges(filmDetails, starshipDetails);
-
-      setNodes(generatedNodes);
-      setEdges(generatedEdges);
+  const { nodes, edges } = useMemo(() => {
+    if (!filmsAndStarshipsData) {
+      return { nodes: [], edges: [] };
     }
+    
+    const { films: filmDetails, starships: starshipDetails } =
+      filmsAndStarshipsData;
+    const generatedNodes = generateNodes(
+      name,
+      filmDetails,
+      starshipDetails
+    );
+    const generatedEdges = generateEdges(filmDetails, starshipDetails);
+
+    return { nodes: generatedNodes, edges: generatedEdges };
   }, [filmsAndStarshipsData, name]);
 
   if (isLoading) {

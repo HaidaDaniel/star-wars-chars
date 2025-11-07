@@ -1,12 +1,13 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
 import { HeroDetailsModal } from "../HeroDetailsModal";
 import { server } from "../../test/mocks/server";
+import type { Hero } from "~/types/Hero.types";
 
 // Mock HeroDetails to avoid React Flow complexity in modal tests
 vi.mock("../HeroDetails", () => ({
-  HeroDetails: ({ heroDetails }: { heroDetails: any }) => (
+  HeroDetails: ({ heroDetails }: { heroDetails: Hero }) => (
     <div data-testid="hero-details-mock">Hero Details for {heroDetails.name}</div>
   ),
 }));

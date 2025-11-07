@@ -1,9 +1,12 @@
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { API_BASE_URL } from "../../constants/api";
+import type { Film } from "~/types/Film.type";
+import type { Hero, HeroPageResponse } from "~/types/Hero.types";
+import type { Starship } from "~/types/Starship.type";
 
 // Mock data
-export const mockHero: any = {
+export const mockHero: Hero = {
   id: 1,
   name: "Luke Skywalker",
   birth_year: "19BBY",
@@ -23,14 +26,14 @@ export const mockHero: any = {
   edited: "2014-12-20T21:17:56.891000Z",
 };
 
-export const mockHeroPageResponse: any = {
+export const mockHeroPageResponse: HeroPageResponse = {
   count: 82,
   next: `${API_BASE_URL}/people/?page=2`,
   previous: null,
   results: [mockHero],
 };
 
-export const mockFilm: any = {
+export const mockFilm: Film = {
   id: 1,
   title: "A New Hope",
   episode_id: 4,
@@ -48,7 +51,7 @@ export const mockFilm: any = {
   edited: "2014-12-20T19:49:45.256000Z",
 };
 
-export const mockStarship: any = {
+export const mockStarship: Starship = {
   id: 12,
   name: "X-wing",
   model: "T-65 X-wing",
@@ -76,11 +79,11 @@ export const handlers = [
   http.get(`${API_BASE_URL}/people/`, ({ request }) => {
     const url = new URL(request.url);
     const page = url.searchParams.get("page");
-    
+
     if (page === "1") {
       return HttpResponse.json(mockHeroPageResponse);
     }
-    
+ 
     return HttpResponse.json({
       ...mockHeroPageResponse,
       next: page === "2" ? `${API_BASE_URL}/people/?page=3` : null,
@@ -101,18 +104,16 @@ export const handlers = [
   // Get film by ID
   http.get(`${API_BASE_URL}/films/:id/`, ({ params }) => {
     const id = Number(params.id);
-    const filmWithoutId = { ...mockFilm };
-    delete filmWithoutId.id;
     return HttpResponse.json({
-      ...filmWithoutId,
+      ...mockFilm,
       url: `${API_BASE_URL}/films/${id}/`,
     });
   }),
 
   // Get all films
   http.get(`${API_BASE_URL}/films/`, () => {
-    const filmWithoutId = { ...mockFilm };
-    delete filmWithoutId.id;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _, ...filmWithoutId } = mockFilm;
     return HttpResponse.json({
       count: 1,
       next: null,
@@ -124,8 +125,8 @@ export const handlers = [
   // Get starship by ID
   http.get(`${API_BASE_URL}/starships/:id/`, ({ params }) => {
     const id = Number(params.id);
-    const starshipWithoutId = { ...mockStarship };
-    delete starshipWithoutId.id;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _, ...starshipWithoutId } = mockStarship;
     return HttpResponse.json({
       ...starshipWithoutId,
       url: `${API_BASE_URL}/starships/${id}/`,
