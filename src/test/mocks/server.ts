@@ -121,7 +121,34 @@ export const handlers = [
     });
   }),
 
-  http.get(`${API_BASE_URL}/films/`, () => {
+  http.get(`${API_BASE_URL}/films/`, ({ request }) => {
+    const url = new URL(request.url);
+    const peopleParam = url.searchParams.get("people");
+    
+    // Handle filtered request by hero ID
+    if (peopleParam) {
+      const heroId = Number(peopleParam);
+      // Return films that include this hero in their characters array
+      if (heroId === 1 || heroId === mockHero.id) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id: _, ...filmWithoutId } = mockFilm;
+        return HttpResponse.json({
+          count: 1,
+          next: null,
+          previous: null,
+          results: [filmWithoutId],
+        });
+      }
+      // Return empty for other hero IDs
+      return HttpResponse.json({
+        count: 0,
+        next: null,
+        previous: null,
+        results: [],
+      });
+    }
+    
+    // Default response for non-filtered requests
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...filmWithoutId } = mockFilm;
     return HttpResponse.json({
@@ -129,6 +156,44 @@ export const handlers = [
       next: null,
       previous: null,
       results: [filmWithoutId],
+    });
+  }),
+
+  http.get(`${API_BASE_URL}/starships/`, ({ request }) => {
+    const url = new URL(request.url);
+    const pilotsParam = url.searchParams.get("pilots");
+    
+    // Handle filtered request by hero ID
+    if (pilotsParam) {
+      const heroId = Number(pilotsParam);
+      // Return starships that include this hero in their pilots array
+      if (heroId === 1 || heroId === mockHero.id) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id: _, ...starshipWithoutId } = mockStarship;
+        return HttpResponse.json({
+          count: 1,
+          next: null,
+          previous: null,
+          results: [starshipWithoutId],
+        });
+      }
+      // Return empty for other hero IDs
+      return HttpResponse.json({
+        count: 0,
+        next: null,
+        previous: null,
+        results: [],
+      });
+    }
+    
+    // Default response for non-filtered requests
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _, ...starshipWithoutId } = mockStarship;
+    return HttpResponse.json({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [starshipWithoutId],
     });
   }),
 

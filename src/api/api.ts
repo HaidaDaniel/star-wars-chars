@@ -81,13 +81,65 @@ export interface IFetchFilmsAndStarships {
   };
 }
 
+type PaginatedResponse<T> = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+};
+
+/**
+ * Fetches all films for a specific hero using API filtering.
+ * Uses the filter endpoint to get all films in a single request instead of multiple individual requests.
+ * @param heroId - The ID of the hero to fetch films for
+ * @returns Array of Film objects
+ */
+const fetchFilmsByHeroId = async (heroId: number): Promise<Film[]> => {
+  try {
+    const response = await baseRequest<PaginatedResponse<Film>>('films/', { people: heroId });
+    return response.results.map(addIdToResource);
+  } catch (error) {
+    console.error(`Failed to fetch films for hero ID: ${heroId}`, error);
+    return [];
+  }
+};
+
+/**
+ * Fetches all starships for a specific hero using API filtering.
+ * Uses the filter endpoint to get all starships in a single request instead of multiple individual requests.
+ * @param heroId - The ID of the hero to fetch starships for
+ * @returns Array of Starship objects
+ */
+const fetchStarshipsByHeroId = async (heroId: number): Promise<Starship[]> => {
+  try {
+    const response = await baseRequest<PaginatedResponse<Starship>>('starships/', { pilots: heroId });
+    return response.results.map(addIdToResource);
+  } catch (error) {
+    console.error(`Failed to fetch starships for hero ID: ${heroId}`, error);
+    return [];
+  }
+};
+
+/**
+ * Optimized function to fetch films and starships for a hero using API filters.
+ * Instead of making N+M individual requests (one per film and starship),
+ * this makes only 2 requests using filters: one for all films and one for all starships.
+ * This significantly reduces the number of API calls and helps avoid rate limiting (429 errors).
+ * @param heroId - The ID of the hero to fetch related data for
+ * @param filmIds - Array of film IDs (kept for backward compatibility, but not used in optimized version)
+ * @param starshipIds - Array of starship IDs (kept for backward compatibility, but not used in optimized version)
+ * @returns Object containing films, starships, and optional warnings
+ */
 export const fetchFilmsAndStarships = async (
+  heroId: number,
   filmIds: number[],
   starshipIds: number[]
 ): Promise<IFetchFilmsAndStarships> => {
-  const films = await fetchWithLimit(filmIds, fetchFilmDetails);
-  await new Promise(resolve => setTimeout(resolve, 100));
-  const starships = await fetchWithLimit(starshipIds, fetchStarshipDetails);
+  // Use optimized filter-based approach: fetch all films and starships in 2 requests instead of N+M
+  const [films, starships] = await Promise.all([
+    fetchFilmsByHeroId(heroId),
+    fetchStarshipsByHeroId(heroId),
+  ]);
 
   const failedFilms = filmIds.length - films.length;
   const failedStarships = starshipIds.length - starships.length;

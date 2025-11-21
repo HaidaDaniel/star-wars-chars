@@ -79,15 +79,25 @@ it('should process items in batches and skip failed requests', async () => {
   consoleErrorSpy.mockRestore();
 });
 
-it('should fetch films and starships in parallel using fetchWithLimit', async () => {
-  const res = await fetchFilmsAndStarships([1], [12]);
+it('should fetch films and starships using API filters (optimized approach)', async () => {
+  // Using hero ID 1 (Luke Skywalker) who has film 1 and starship 12
+  const heroId = 1;
+  const res = await fetchFilmsAndStarships(heroId, [1], [12]);
 
-  expect(res.films).toHaveLength(1);
-  expect(res.starships).toHaveLength(1);
-  expect(res.films[0].title).toBe('A New Hope');
-  expect(res.films[0].id).toBeDefined();
-  expect(res.starships[0].name).toBe('X-wing');
-  expect(res.starships[0].id).toBeDefined();
+  expect(res.films.length).toBeGreaterThanOrEqual(1);
+  expect(res.starships.length).toBeGreaterThanOrEqual(1);
+  
+  // Verify that the results include the expected film and starship
+  const film1 = res.films.find(f => f.id === 1);
+  const starship12 = res.starships.find(s => s.id === 12);
+  
+  expect(film1).toBeDefined();
+  expect(film1?.title).toBe('A New Hope');
+  expect(film1?.id).toBeDefined();
+  
+  expect(starship12).toBeDefined();
+  expect(starship12?.name).toBe('X-wing');
+  expect(starship12?.id).toBeDefined();
 });
 
 it('should fetch and organize films data by ID', async () => {

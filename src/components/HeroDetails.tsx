@@ -19,7 +19,7 @@ interface HeroDetailsProps {
 }
 
 export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
-  const { name, films, starships } = heroDetails;
+  const { id, name, films, starships } = heroDetails;
 
   const {
     data: filmsAndStarshipsData,
@@ -27,8 +27,8 @@ export const HeroDetails: React.FC<HeroDetailsProps> = ({ heroDetails }) => {
     isError,
     error,
   } = useQuery<IFetchFilmsAndStarships>({
-    queryKey: ["filmsAndStarships", films || [], starships || []],
-    queryFn: () => fetchFilmsAndStarships(films || [], starships || []),
+    queryKey: ["filmsAndStarships", id, films || [], starships || []],
+    queryFn: () => fetchFilmsAndStarships(id, films || [], starships || []),
   });
 
   const { nodes, edges } = useMemo(() => {
